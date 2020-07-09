@@ -1,0 +1,16 @@
+.remote-stream .expanded-stream {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.remote-stream .shrinked-stream {
+  position: absolute;
+  width: 20%;
+  height: 0;
+  right: 20px;
+  bottom: 20px;
+  top: auto;
+  z-index: 2;
+}
