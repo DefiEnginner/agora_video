@@ -17,7 +17,7 @@ const LocalStream = ({ expanded, setExpanded, aspectRatio }) => {
       <div
         className={expanded ? "expanded-stream" : "shrinked-stream"}
         style={{ paddingTop: `${20 / aspectRatio}%` }}
-        onDoubleClick={() => setExpanded(!expanded)}
+        onDoubleClick={() => !expanded && setExpanded(true)}
       >
         <div
           id="agora_local"

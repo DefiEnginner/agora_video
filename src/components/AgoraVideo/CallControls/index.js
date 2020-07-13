@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "antd";
 import {
   VideoCameraFilled,
@@ -6,12 +6,15 @@ import {
   WhatsAppOutlined,
   AudioMutedOutlined,
   VideoCameraAddOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import "./index.css";
 
-const CallControls = ({ stream, leaveCall }) => {
+const CallControls = ({ stream, leaveCall, devices }) => {
   const [audioMuted, setAudioMuted] = useState(true);
   const [videoMuted, setVideoMuted] = useState(true);
+  const deviceIndex = useRef();
+  deviceIndex.current = 0;
 
   useEffect(() => {
     // set audio muted and video muted
@@ -34,11 +37,28 @@ const CallControls = ({ stream, leaveCall }) => {
   return (
     <div className="call-controls">
       <div className="controls">
+        {devices.length > 1 && (
+          <Button
+            size="large"
+            shape="circle"
+            icon={<ReloadOutlined />}
+            className="control"
+            onClick={() => {
+              deviceIndex.current = (deviceIndex.current + 1) % devices.length;
+              stream.getVideoTrack().stop();
+              stream.switchDevice(
+                "video",
+                devices[deviceIndex.current].deviceId
+              );
+            }}
+          />
+        )}
         <Button
           size="large"
           shape="circle"
           icon={audioMuted ? <AudioMutedOutlined /> : <AudioOutlined />}
           className="control"
+          style={{ background: audioMuted ? "gray" : "white", border: "none" }}
           onClick={muteAudio}
         />
         <Button
@@ -46,6 +66,7 @@ const CallControls = ({ stream, leaveCall }) => {
           shape="circle"
           icon={videoMuted ? <VideoCameraAddOutlined /> : <VideoCameraFilled />}
           className="control"
+          style={{ background: videoMuted ? "gray" : "white", border: "none" }}
           onClick={muteVideo}
         />
         <Button

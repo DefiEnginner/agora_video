@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 
 import "./index.css";
 
-const RemoteStream = ({ expanded, aspectRatio }) => {
+const RemoteStream = ({ expanded, setExpanded, aspectRatio }) => {
   const ref = useRef();
   useEffect(() => {
     // Set to cover if shrinked
@@ -17,6 +17,7 @@ const RemoteStream = ({ expanded, aspectRatio }) => {
       <div
         className={expanded ? "expanded-stream" : "shrinked-stream"}
         style={{ paddingTop: `${20 / aspectRatio}%` }}
+        onDoubleClick={() => !expanded && setExpanded(false)}
       >
         <div
           id="agora_remote"

@@ -20,6 +20,7 @@ const AgoraVideo = ({
   const [expanded, setExpanded] = useState(false);
   const [localRatio, setLocalRatio] = useState(1);
   const [remoteRatio, setRemoteRatio] = useState(1);
+  const [devices, setDevices] = useState([]);
 
   // call when remote stream is removed
   const remoteStreamRemoved = () => {
@@ -31,6 +32,7 @@ const AgoraVideo = ({
     clearInterval(localInterval.current);
     clearInterval(remoteInterval.current);
     client.current.leave();
+    window.location.href = "https://google.com";
   };
 
   // subscribe to stream events to hear the remote stream
@@ -38,6 +40,7 @@ const AgoraVideo = ({
     // Remote stream added
     client.current.on("stream-added", function (evt) {
       let stream = evt.stream;
+
       client.current.subscribe(stream, (err) =>
         console.log("subscribe remote failed", err)
       );
@@ -47,6 +50,7 @@ const AgoraVideo = ({
     client.current.on("peer-leave", function (evt) {
       remoteStreamRemoved();
       remoteStream.current.stop();
+      window.location.href = "https://google.com";
     });
 
     // Remote stream subscribed
@@ -74,6 +78,13 @@ const AgoraVideo = ({
 
   useEffect(() => {
     // Create the client, init and subscribe the stream events
+    const getDevices = () => {
+      AgoraRTC.getDevices((dvcs) =>
+        setDevices(dvcs.filter(({ kind }) => kind === "videoinput"))
+      );
+    };
+
+    getDevices();
     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
     client.current.init(AGORA_APP_ID, () => {}, []);
     subscribeStreamEvents();
@@ -95,10 +106,16 @@ const AgoraVideo = ({
 
           // Get aspect ratio
           localInterval.current = setInterval(() => {
-            const {
+            let {
               aspectRatio,
+              height,
               width,
             } = localStream.current.getVideoTrack().getSettings();
+
+            if (!aspectRatio && height && width) {
+              aspectRatio = width / height;
+            }
+
             if (aspectRatio !== localRatio) {
               setLocalRatio(aspectRatio);
             }
@@ -125,8 +142,16 @@ const AgoraVideo = ({
         setExpanded={setExpanded}
         aspectRatio={localRatio}
       />
-      <RemoteStream expanded={!expanded} aspectRatio={remoteRatio} />
-      <CallControls stream={localStream.current} leaveCall={leaveCall} />
+      <RemoteStream
+        expanded={!expanded}
+        setExpanded={setExpanded}
+        aspectRatio={remoteRatio}
+      />
+      <CallControls
+        stream={localStream.current}
+        leaveCall={leaveCall}
+        devices={devices}
+      />
     </div>
   );
 };
