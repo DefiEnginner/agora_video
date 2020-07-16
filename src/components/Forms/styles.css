@@ -1,0 +1,17 @@
+.form-title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.form-line {
+  margin-bottom: 20px;
+}
+
+.form-field {
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+.form-field-value {
+  font-size: 14px;
+}

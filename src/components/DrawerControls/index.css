@@ -1,0 +1,35 @@
+.drawer-controls {
+  position: absolute;
+  left: 30px;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  height: 100%;
+  width: 50px;
+}
+
+.drawer-controls .controls .control {
+  margin-bottom: 15px;
+  background: #00aa99;
+  border: none;
+  width: 60px;
+  height: 60px;
+}
+
+.ant-drawer-content-wrapper {
+  width: 640px !important;
+}
+
+@media only screen and (max-width: 640px) {
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .condition-render {
+    display: none !important;
+  }
+}
