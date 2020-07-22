@@ -62,10 +62,19 @@ const AgoraVideo = ({
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
-      setRemoteJoined(true);
-      remoteStream.current.play("agora_remote", {
-        fit: !expanded ? "contain" : "cover",
-      });
+      remoteStream.current.play(
+        "agora_remote",
+        {
+          fit: !expanded ? "contain" : "cover",
+        },
+        (errState) => {
+          if (errState && errState.status !== "aborted") {
+            remoteStream.current.resume();
+          }
+
+          setRemoteJoined(true);
+        }
+      );
 
       remoteInterval.current = setInterval(() => {
         const {
