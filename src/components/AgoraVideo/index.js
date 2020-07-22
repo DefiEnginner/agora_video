@@ -40,7 +40,11 @@ const AgoraVideo = ({
 
   const switchCamera = async () => {
     const devices = await getDevices();
-    deviceIndex.current = (deviceIndex.current + 1) % devices.length;
+    if (devices.length < 2) {
+      return;
+    }
+
+    deviceIndex.current = (deviceIndex.current + 1) % 2;
     localStream.current.getVideoTrack().stop();
     localStream.current.switchDevice(
       "video",
