@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import "./index.css";
 
-const CallControls = ({ stream, leaveCall, devices }) => {
+const CallControls = ({ stream, leaveCall, devices, remoteJoined }) => {
   const [audioMuted, setAudioMuted] = useState(true);
   const [videoMuted, setVideoMuted] = useState(true);
   const deviceIndex = useRef();
@@ -69,15 +69,17 @@ const CallControls = ({ stream, leaveCall, devices }) => {
           style={{ background: videoMuted ? "gray" : "white", border: "none" }}
           onClick={muteVideo}
         />
-        <Button
-          type="primary"
-          danger
-          size="large"
-          shape="circle"
-          icon={<WhatsAppOutlined />}
-          className="control"
-          onClick={leaveCall}
-        />
+        {remoteJoined && (
+          <Button
+            type="primary"
+            danger
+            size="large"
+            shape="circle"
+            icon={<WhatsAppOutlined />}
+            className="control"
+            onClick={leaveCall}
+          />
+        )}
       </div>
     </div>
   );

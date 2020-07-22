@@ -6,11 +6,17 @@ import config from "./config";
 import LocalStream from "./localStream";
 import RemoteStream from "./RemoteStream";
 import CallControls from "./CallControls";
+import { v4 as uuidv4 } from "uuid";
 
 const { AGORA_APP_ID } = config;
 
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
+  userID = uuidv4(),
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIACNZvz4VE0G67IAisCaUtDsx58cEVvaZW/zlbjr9TmJJoLfv3wAAAAAEABOIshE8QcZXwEAAQDxBxlf",
+  remoteJoined,
+  setRemoteJoined,
+  leaveCall: leavePage,
 }) => {
   const client = useRef(null);
   const localStream = useRef();
@@ -32,7 +38,7 @@ const AgoraVideo = ({
     clearInterval(localInterval.current);
     clearInterval(remoteInterval.current);
     client.current.leave();
-    window.location.href = "https://google.com";
+    leavePage();
   };
 
   // subscribe to stream events to hear the remote stream
@@ -48,14 +54,15 @@ const AgoraVideo = ({
 
     // Peer leaved the call
     client.current.on("peer-leave", function (evt) {
-      remoteStreamRemoved();
       remoteStream.current.stop();
-      window.location.href = "https://google.com";
+      clearInterval(remoteInterval.current);
+      setRemoteJoined(false);
     });
 
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
+      setRemoteJoined(true);
       remoteStream.current.play("agora_remote", {
         fit: !expanded ? "contain" : "cover",
       });
@@ -90,7 +97,7 @@ const AgoraVideo = ({
     subscribeStreamEvents();
 
     // Join to the channel
-    client.current.join(AGORA_APP_ID, channel, undefined, (uid) => {
+    client.current.join(token, channel, userID, (uid) => {
       localStream.current = AgoraRTC.createStream({
         streamID: uid,
         audio: true,
@@ -151,6 +158,7 @@ const AgoraVideo = ({
         stream={localStream.current}
         leaveCall={leaveCall}
         devices={devices}
+        remoteJoined={remoteJoined}
       />
     </div>
   );

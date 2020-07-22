@@ -1,15 +1,27 @@
 import React from "react";
+import {
+  Route,
+  Switch,
+  Redirect,
+  BrowserRouter as Router,
+} from "react-router-dom";
 
-import AgoraVideo from "./components/AgoraVideo";
-import DrawerControls from "./components/DrawerControls";
+import HomePage from "./pages/HomePage";
+import VideoCallPage from "./pages/VideoCallPage";
 import "antd/dist/antd.css";
 
 function App() {
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <AgoraVideo />
-      <DrawerControls />
-    </div>
+    <Router>
+      <Switch>
+        <Route exact path="/" render={(props) => <HomePage {...props} />} />
+        <Route
+          path="/video-call"
+          render={(props) => <VideoCallPage {...props} />}
+        />
+        <Redirect to="/" />
+      </Switch>
+    </Router>
   );
 }
 
