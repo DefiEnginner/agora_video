@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Button, Drawer } from "antd";
 import {
   AuditOutlined,
@@ -13,6 +13,7 @@ import AppointmentSummaryNotes from "../Forms/AppointmentSummaryNotes";
 import PrescriptionItmes from "../Forms/PrescriptionItems";
 import LabTestsInstructions from "../Forms/LabTestsInstructed";
 import DoctorsAdvice from "../Forms/DoctorsAdvice";
+import AdditionalControls from "./AdditionalControls";
 
 import "./index.css";
 
@@ -88,6 +89,10 @@ const DrawerControls = () => {
           bodyStyle={{ paddingBottom: 80 }}
         >
           {DrawerForm}
+          <AdditionalControls
+            currentDrawer={currentDrawer}
+            setCurrentDrawer={setCurrentDrawer}
+          />
         </Drawer>
       </div>
     </div>

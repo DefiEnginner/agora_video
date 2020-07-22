@@ -16,7 +16,7 @@ const RemoteStream = ({ expanded, setExpanded, aspectRatio }) => {
     <div className="remote-stream">
       <div
         className={expanded ? "expanded-stream" : "shrinked-stream"}
-        style={{ paddingTop: `${20 / aspectRatio}%` }}
+        style={{ paddingTop: `${30 / aspectRatio}%` }}
         onDoubleClick={() => !expanded && setExpanded(false)}
       >
         <div

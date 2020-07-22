@@ -9,10 +9,13 @@ import {
 import HomePage from "./pages/HomePage";
 import VideoCallPage from "./pages/VideoCallPage";
 import "antd/dist/antd.css";
+import { createBrowserHistory } from "history";
+
+const history = createBrowserHistory();
 
 function App() {
   return (
-    <Router>
+    <Router history={history}>
       <Switch>
         <Route exact path="/" render={(props) => <HomePage {...props} />} />
         <Route

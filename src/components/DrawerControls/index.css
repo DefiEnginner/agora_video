@@ -28,8 +28,37 @@
   }
 }
 
-@media only screen and (max-width: 425px) {
+@media only screen and (max-width: 670px) {
+  .control {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+@media only screen and (max-width: 520px) {
   .condition-render {
     display: none !important;
   }
+  .drawer-controls {
+    top: -200px;
+  }
+}
+
+.additional-controls {
+  position: absolute;
+  top: auto;
+  bottom: 30px;
+  z-index: 3;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  left: 0;
+}
+
+.additional-controls .controls .control {
+  margin-right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #00aa99;
+  border: none;
 }

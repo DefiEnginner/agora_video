@@ -8,6 +8,25 @@
   width: 100%;
 }
 
-.controls .control {
+.call-controls .controls .control {
   margin-right: 20px;
+  width: 60px;
+  height: 60px;
+}
+
+@media only screen and (max-width: 520px) {
+  .call-controls {
+    position: absolute;
+    left: 30px;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 100%;
+    width: 50px;
+  }
+  .call-controls .controls .control {
+    margin-bottom: 20px;
+  }
 }

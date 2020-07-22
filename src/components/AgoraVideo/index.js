@@ -26,7 +26,27 @@ const AgoraVideo = ({
   const [expanded, setExpanded] = useState(false);
   const [localRatio, setLocalRatio] = useState(1);
   const [remoteRatio, setRemoteRatio] = useState(1);
-  const [devices, setDevices] = useState([]);
+
+  const deviceIndex = useRef();
+  deviceIndex.current = 0;
+
+  const getDevices = () => {
+    return new Promise((resolve) => {
+      AgoraRTC.getDevices((dvcs) =>
+        resolve(dvcs.filter(({ kind }) => kind === "videoinput"))
+      );
+    });
+  };
+
+  const switchCamera = async () => {
+    const devices = await getDevices();
+    deviceIndex.current = (deviceIndex.current + 1) % devices.length;
+    localStream.current.getVideoTrack().stop();
+    localStream.current.switchDevice(
+      "video",
+      devices[deviceIndex.current].deviceId
+    );
+  };
 
   // call when remote stream is removed
   const remoteStreamRemoved = () => {
@@ -56,7 +76,6 @@ const AgoraVideo = ({
     client.current.on("peer-leave", function (evt) {
       remoteStream.current.stop();
       clearInterval(remoteInterval.current);
-      setRemoteJoined(false);
     });
 
     // Remote stream subscribed
@@ -94,13 +113,7 @@ const AgoraVideo = ({
 
   useEffect(() => {
     // Create the client, init and subscribe the stream events
-    const getDevices = () => {
-      AgoraRTC.getDevices((dvcs) =>
-        setDevices(dvcs.filter(({ kind }) => kind === "videoinput"))
-      );
-    };
 
-    getDevices();
     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
     client.current.init(AGORA_APP_ID, () => {}, []);
     subscribeStreamEvents();
@@ -166,8 +179,8 @@ const AgoraVideo = ({
       <CallControls
         stream={localStream.current}
         leaveCall={leaveCall}
-        devices={devices}
         remoteJoined={remoteJoined}
+        switchCamera={switchCamera}
       />
     </div>
   );

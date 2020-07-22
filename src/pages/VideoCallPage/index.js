@@ -19,7 +19,7 @@ const VideoCallPage = (props) => {
           "We only support safari on iPhone. Please check your browser and join again.",
       });
     }
-  }, []);
+  }, [props.history]);
 
   const leaveCall = () => props.history.push("/");
 
@@ -32,7 +32,7 @@ const VideoCallPage = (props) => {
       />
       {!remoteJoined && (
         <div className="loader">
-          <Spin /> Wating For Participant ...
+          <Spin /> Waiting For Participant ...
         </div>
       )}
       {remoteJoined && <DrawerControls />}
