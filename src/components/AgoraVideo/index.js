@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import AgoraRTC from "agora-rtc-sdk";
 
-import "./style.css";
 import config from "./config";
 import LocalStream from "./localStream";
 import RemoteStream from "./RemoteStream";
 import CallControls from "./CallControls";
 import { v4 as uuidv4 } from "uuid";
+
+import "./style.css";
 
 const { AGORA_APP_ID } = config;
 
@@ -37,6 +38,12 @@ const AgoraVideo = ({
     });
   };
 
+  const switchDevice = (id) =>
+    new Promise((resolve, reject) => {
+      localStream.current.getVideoTrack().stop();
+      localStream.current.switchDevice("video", id, resolve, reject);
+    });
+
   const switchCamera = async () => {
     const devices = await getDevices();
     if (devices.length < 2) {
@@ -44,15 +51,13 @@ const AgoraVideo = ({
     }
 
     deviceIndex.current = (deviceIndex.current + 1) % 2;
+    localStream.current.getVideoTrack().stop();
 
-    if (deviceIndex.current === 0) {
-      for (let i = 0; i < 3; i += 1) {
-        localStream.current.getVideoTrack().stop();
-        localStream.current.switchDevice(
-          "video",
-          devices[deviceIndex.current].deviceId
-        );
-      }
+    while (1) {
+      try {
+        await switchDevice(devices[deviceIndex.current].deviceId);
+        break;
+      } catch (e) {}
     }
   };
 
@@ -90,18 +95,12 @@ const AgoraVideo = ({
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
-      remoteStream.current.muteAudio();
       remoteStream.current.play(
         "agora_remote",
         {
           fit: !expanded ? "contain" : "cover",
         },
-        async (errState) => {
-          if (errState && errState.status !== "aborted") {
-            await remoteStream.current.resume();
-          }
-
-          remoteStream.current.unmuteAudio();
+        async () => {
           setRemoteJoined(true);
         }
       );
@@ -173,7 +172,8 @@ const AgoraVideo = ({
         (err) => console.error("stream init fail", err)
       );
     });
-  }, [channel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div style={{ background: "#303070", width: "100%", height: "100%" }}>
