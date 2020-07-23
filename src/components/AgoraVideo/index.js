@@ -14,7 +14,6 @@ const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
   userID = uuidv4() /* user ID as a prop */,
   token = "006d874b444c4d84e3fab1db6af0ef8a40aIAAzww6R7mAFTLKv1QcJmkAQxr/sFcHlVyY9TG1M0wAGboLfv3wAAAAAEAC+3ac7wCYbXwEAAQC/Jhtf" /* token as a prop */,
-  remoteJoined,
   setRemoteJoined,
   leaveCall: leavePage,
 }) => {
@@ -91,9 +90,11 @@ const AgoraVideo = ({
         {
           fit: !expanded ? "contain" : "cover",
         },
-        (errState) => {
+        async (errState) => {
           if (errState && errState.status !== "aborted") {
-            remoteStream.current.resume();
+            remoteStream.current.muteAudio();
+            await remoteStream.current.resume();
+            remoteStream.current.unmuteAudio();
           }
 
           setRemoteJoined(true);

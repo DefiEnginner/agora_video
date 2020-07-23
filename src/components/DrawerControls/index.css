@@ -6,8 +6,8 @@
   display: flex;
   justify-content: space-around;
   flex-direction: column;
-  height: 100%;
   width: 50px;
+  height: 100%;
 }
 
 .drawer-controls .controls .control {
@@ -40,7 +40,9 @@
     display: none !important;
   }
   .drawer-controls {
-    top: -170px;
+    bottom: calc(50% + 160px);
+    height: calc(50% - 160px);
+    justify-content: flex-end;
   }
 }
 
