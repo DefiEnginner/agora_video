@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Spin, notification } from "antd";
-import { isChrome, isFirefox, mobileVendor } from "react-device-detect";
+import { isChrome, isFirefox, isIOS } from "react-device-detect";
 
 import AgoraVideo from "../../components/AgoraVideo";
 import DrawerControls from "../../components/DrawerControls";
@@ -9,9 +9,10 @@ import "./index.css";
 
 const VideoCallPage = (props) => {
   const [remoteJoined, setRemoteJoined] = useState(false);
+  const shouldAbort = isIOS && (isChrome || isFirefox);
 
   useEffect(() => {
-    if (mobileVendor === "iPhone" && (isChrome || isFirefox)) {
+    if (shouldAbort) {
       props.history.push("/");
       notification.error({
         message: "Browser not supported",
@@ -19,11 +20,12 @@ const VideoCallPage = (props) => {
           "We only support safari on iPhone. Please check your browser and join again.",
       });
     }
-  }, [props.history]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const leaveCall = () => props.history.push("/");
 
-  return (
+  return shouldAbort ? null : (
     <div style={{ width: "100vw", height: "100vh" }}>
       <AgoraVideo
         remoteJoined={remoteJoined}
