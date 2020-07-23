@@ -44,11 +44,16 @@ const AgoraVideo = ({
     }
 
     deviceIndex.current = (deviceIndex.current + 1) % 2;
-    localStream.current.getVideoTrack().stop();
-    localStream.current.switchDevice(
-      "video",
-      devices[deviceIndex.current].deviceId
-    );
+
+    if (deviceIndex.current === 0) {
+      for (let i = 0; i < 3; i += 1) {
+        localStream.current.getVideoTrack().stop();
+        localStream.current.switchDevice(
+          "video",
+          devices[deviceIndex.current].deviceId
+        );
+      }
+    }
   };
 
   // call when remote stream is removed
