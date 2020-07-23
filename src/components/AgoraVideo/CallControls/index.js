@@ -12,7 +12,7 @@ import { isMobile } from "react-device-detect";
 
 import "./index.css";
 
-const CallControls = ({ stream, leaveCall, remoteJoined, switchCamera }) => {
+const CallControls = ({ stream, leaveCall, switchCamera }) => {
   const [audioMuted, setAudioMuted] = useState(true);
   const [videoMuted, setVideoMuted] = useState(true);
 
@@ -59,16 +59,14 @@ const CallControls = ({ stream, leaveCall, remoteJoined, switchCamera }) => {
           style={{ background: videoMuted ? "gray" : "white", border: "none" }}
           onClick={muteVideo}
         />
-        {remoteJoined && (
-          <Button
-            type="primary"
-            danger
-            shape="circle"
-            icon={<WhatsAppOutlined />}
-            className="control"
-            onClick={leaveCall}
-          />
-        )}
+        <Button
+          type="primary"
+          danger
+          shape="circle"
+          icon={<WhatsAppOutlined />}
+          className="control"
+          onClick={leaveCall}
+        />
       </div>
     </div>
   );

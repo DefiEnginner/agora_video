@@ -12,8 +12,8 @@ const { AGORA_APP_ID } = config;
 
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
-  userID = uuidv4(),
-  token = "006d874b444c4d84e3fab1db6af0ef8a40aIACNZvz4VE0G67IAisCaUtDsx58cEVvaZW/zlbjr9TmJJoLfv3wAAAAAEABOIshE8QcZXwEAAQDxBxlf",
+  userID = uuidv4() /* user ID as a prop */,
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIAAzww6R7mAFTLKv1QcJmkAQxr/sFcHlVyY9TG1M0wAGboLfv3wAAAAAEAC+3ac7wCYbXwEAAQC/Jhtf" /* token as a prop */,
   remoteJoined,
   setRemoteJoined,
   leaveCall: leavePage,
@@ -62,6 +62,7 @@ const AgoraVideo = ({
     clearInterval(localInterval.current);
     clearInterval(remoteInterval.current);
     client.current.leave();
+    localStream.current.close();
     leavePage();
   };
 
@@ -183,7 +184,6 @@ const AgoraVideo = ({
       <CallControls
         stream={localStream.current}
         leaveCall={leaveCall}
-        remoteJoined={remoteJoined}
         switchCamera={switchCamera}
       />
     </div>
