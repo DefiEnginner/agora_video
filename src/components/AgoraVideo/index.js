@@ -85,6 +85,7 @@ const AgoraVideo = ({
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
+      remoteStream.current.muteAudio();
       remoteStream.current.play(
         "agora_remote",
         {
@@ -92,11 +93,10 @@ const AgoraVideo = ({
         },
         async (errState) => {
           if (errState && errState.status !== "aborted") {
-            remoteStream.current.muteAudio();
             await remoteStream.current.resume();
-            remoteStream.current.unmuteAudio();
           }
 
+          remoteStream.current.unmuteAudio();
           setRemoteJoined(true);
         }
       );
