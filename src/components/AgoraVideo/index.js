@@ -14,7 +14,7 @@ const { AGORA_APP_ID } = config;
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
   userID = uuidv4() /* user ID as a prop */,
-  token = "006d874b444c4d84e3fab1db6af0ef8a40aIAAzww6R7mAFTLKv1QcJmkAQxr/sFcHlVyY9TG1M0wAGboLfv3wAAAAAEAC+3ac7wCYbXwEAAQC/Jhtf" /* token as a prop */,
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIABXXPVQFX8jFXimKTaTnOo1Skdn49vyaY1kCKMdM6LcVILfv3wAAAAAEAC+3ac7xaQbXwEAAQDEpBtf" /* token as a prop */,
   setRemoteJoined,
   leaveCall: leavePage,
 }) => {
