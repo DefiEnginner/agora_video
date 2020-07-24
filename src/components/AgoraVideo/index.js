@@ -108,11 +108,15 @@ const AgoraVideo = ({
       );
 
       remoteInterval.current = setInterval(() => {
-        const {
-          aspectRatio,
-        } = remoteStream.current.getVideoTrack().getSettings();
-        if (aspectRatio !== remoteRatio) {
-          setRemoteRatio(aspectRatio);
+        try {
+          const {
+            aspectRatio,
+          } = remoteStream.current.getVideoTrack().getSettings();
+          if (aspectRatio !== remoteRatio) {
+            setRemoteRatio(aspectRatio);
+          }
+        } catch (e) {
+          clearInterval(remoteInterval.current);
         }
       }, 1000);
     });
@@ -156,23 +160,27 @@ const AgoraVideo = ({
 
             // Get aspect ratio
             localInterval.current = setInterval(() => {
-              let {
-                aspectRatio,
-                height,
-                width,
-              } = localStream.current.getVideoTrack().getSettings();
+              try {
+                let {
+                  aspectRatio,
+                  height,
+                  width,
+                } = localStream.current.getVideoTrack().getSettings();
 
-              if (!aspectRatio && height && width) {
-                aspectRatio = width / height;
-              }
+                if (!aspectRatio && height && width) {
+                  aspectRatio = width / height;
+                }
 
-              if (aspectRatio !== localRatio) {
-                setLocalRatio(aspectRatio);
-              }
+                if (aspectRatio !== localRatio) {
+                  setLocalRatio(aspectRatio);
+                }
 
-              // If width is larger than 720, then set the video profile to 720p_1
-              if (width > 720) {
-                localStream.current.setVideoProfile("720p_1");
+                // If width is larger than 720, then set the video profile to 720p_1
+                if (width > 720) {
+                  localStream.current.setVideoProfile("720p_1");
+                }
+              } catch (e) {
+                clearInterval(localInterval.current);
               }
             }, 1000);
 
