@@ -95,12 +95,14 @@ const AgoraVideo = ({
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
+      remoteStream.current.muteAudio();
       remoteStream.current.play(
         "agora_remote",
         {
           fit: !expanded ? "contain" : "cover",
         },
         async () => {
+          remoteStream.current.unmuteAudio();
           setRemoteJoined(true);
         }
       );
@@ -128,49 +130,59 @@ const AgoraVideo = ({
     client.current.init(AGORA_APP_ID, () => {}, []);
     subscribeStreamEvents();
 
+    const timeout = (time) =>
+      new Promise((resolve) => setTimeout(resolve, time));
+
     // Join to the channel
-    client.current.join(token, channel, userID, (uid) => {
-      localStream.current = AgoraRTC.createStream({
-        streamID: uid,
-        audio: true,
-        video: true,
-        screen: false,
+    client.current.join(token, channel, userID, async (uid) => {
+      await timeout(2000);
+      clearInterval(localInterval.current);
+      clearInterval(remoteInterval.current);
+      client.current.leave();
+
+      client.current.join(token, channel, userID, (uid) => {
+        localStream.current = AgoraRTC.createStream({
+          streamID: uid,
+          audio: true,
+          video: true,
+          screen: false,
+        });
+
+        // Init local stream
+        localStream.current.init(
+          () => {
+            console.log("stream init success");
+            localStream.current.play("agora_local");
+
+            // Get aspect ratio
+            localInterval.current = setInterval(() => {
+              let {
+                aspectRatio,
+                height,
+                width,
+              } = localStream.current.getVideoTrack().getSettings();
+
+              if (!aspectRatio && height && width) {
+                aspectRatio = width / height;
+              }
+
+              if (aspectRatio !== localRatio) {
+                setLocalRatio(aspectRatio);
+              }
+
+              // If width is larger than 720, then set the video profile to 720p_1
+              if (width > 720) {
+                localStream.current.setVideoProfile("720p_1");
+              }
+            }, 1000);
+
+            client.current.publish(localStream.current, (err) =>
+              console.error("publish failed", err)
+            );
+          },
+          (err) => console.error("stream init fail", err)
+        );
       });
-
-      // Init local stream
-      localStream.current.init(
-        () => {
-          console.log("stream init success");
-          localStream.current.play("agora_local");
-
-          // Get aspect ratio
-          localInterval.current = setInterval(() => {
-            let {
-              aspectRatio,
-              height,
-              width,
-            } = localStream.current.getVideoTrack().getSettings();
-
-            if (!aspectRatio && height && width) {
-              aspectRatio = width / height;
-            }
-
-            if (aspectRatio !== localRatio) {
-              setLocalRatio(aspectRatio);
-            }
-
-            // If width is larger than 720, then set the video profile to 720p_1
-            if (width > 720) {
-              localStream.current.setVideoProfile("720p_1");
-            }
-          }, 1000);
-
-          client.current.publish(localStream.current, (err) =>
-            console.error("publish failed", err)
-          );
-        },
-        (err) => console.error("stream init fail", err)
-      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
