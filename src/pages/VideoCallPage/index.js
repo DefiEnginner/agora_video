@@ -20,12 +20,12 @@ const VideoCallPage = (props) => {
           setRemoteJoined={setRemoteJoined}
           leaveCall={leaveCall}
         />
+        <DrawerControls />
         {!remoteJoined && (
           <div className="loader">
             <Spin /> Waiting For Participant ...
           </div>
         )}
-        {remoteJoined && <DrawerControls />}
       </div>
     </BrowserCheck>
   );

@@ -8,13 +8,14 @@ import {
   isAndroid,
   isIE,
   isEdge,
+  isEdgeChromium,
 } from "react-device-detect";
 import { withRouter } from "react-router-dom";
 
 const BrowserCheck = ({ redirectURL = "/", children, history }) => {
   const iosAbort = isIOS && (isChrome || isFirefox);
-  const androidAbort = isAndroid && (isSafari || isChrome);
-  const edgeAbort = isIE || isEdge;
+  const androidAbort = isAndroid && (isSafari || isFirefox);
+  const edgeAbort = (isIE || isEdge) && !isEdgeChromium;
 
   const errMessage = iosAbort
     ? "We only support safari on iPhone. Please check your browser and join again."
