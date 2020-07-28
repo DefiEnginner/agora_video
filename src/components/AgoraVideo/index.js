@@ -14,7 +14,7 @@ const { AGORA_APP_ID } = config;
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
   userID = uuidv4() /* user ID as a prop */,
-  token = "006d874b444c4d84e3fab1db6af0ef8a40aIABkuMDO87rX0JlpN9Xhc+A4yhxZEVoBgmVCnMlxJ3jq5ILfv3wAAAAAEACj2bq0hxIgXwEAAQCHEiBf" /* token as a prop */,
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIACrN9a6NyoUAXvoqMpnPnmEisovu9Z/CwhYj/PAyC8ZxoLfv3wAAAAAEACj2bq01ckgXwEAAQDVySBf" /* token as a prop */,
   setRemoteJoined,
   leaveCall: leavePage,
 }) => {
@@ -95,17 +95,17 @@ const AgoraVideo = ({
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
       remoteStream.current = evt.stream;
-      remoteStream.current.muteAudio();
       remoteStream.current.play(
         "agora_remote",
         {
           fit: !expanded ? "contain" : "cover",
         },
         async () => {
-          remoteStream.current.unmuteAudio();
           setRemoteJoined(true);
         }
       );
+
+      console.log(remoteStream.current.getAudioTrack());
 
       remoteInterval.current = setInterval(() => {
         try {
@@ -139,7 +139,7 @@ const AgoraVideo = ({
 
     // Join to the channel
     client.current.join(token, channel, userID, async (uid) => {
-      await timeout(2000);
+      await timeout(1000);
       clearInterval(localInterval.current);
       clearInterval(remoteInterval.current);
       client.current.leave();
