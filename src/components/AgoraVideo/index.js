@@ -14,8 +14,7 @@ const { AGORA_APP_ID } = config;
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
   userID = uuidv4() /* user ID as a prop */,
-  token = "006d874b444c4d84e3fab1db6af0ef8a40aIACrN9a6NyoUAXvoqMpnPnmEisovu9Z/CwhYj/PAyC8ZxoLfv3wAAAAAEACj2bq01ckgXwEAAQDVySBf" /* token as a prop */,
-  setRemoteJoined,
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIADExRkeu8HwcYtYTshv7X874aFgW7aUxxLESH4lruDkRoLfv3wAAAAAEABedM71nXAhXwEAAQCccCFf" /* token as a prop */,
   leaveCall: leavePage,
 }) => {
   const client = useRef(null);
@@ -26,6 +25,9 @@ const AgoraVideo = ({
   const [expanded, setExpanded] = useState(false);
   const [localRatio, setLocalRatio] = useState(1);
   const [remoteRatio, setRemoteRatio] = useState(1);
+
+  const received = useRef();
+  received.current = true;
 
   const deviceIndex = useRef();
   deviceIndex.current = 0;
@@ -75,6 +77,56 @@ const AgoraVideo = ({
     leavePage();
   };
 
+  const joinChannel = () => {
+    client.current.join(token, channel, userID, (uid) => {
+      localStream.current = AgoraRTC.createStream({
+        streamID: uid,
+        audio: true,
+        video: true,
+        screen: false,
+      });
+
+      // Init local stream
+      localStream.current.init(
+        () => {
+          console.log("stream init success");
+          localStream.current.play("agora_local");
+
+          // Get aspect ratio
+          localInterval.current = setInterval(() => {
+            try {
+              let {
+                aspectRatio,
+                height,
+                width,
+              } = localStream.current.getVideoTrack().getSettings();
+
+              if (!aspectRatio && height && width) {
+                aspectRatio = width / height;
+              }
+
+              if (aspectRatio !== localRatio) {
+                setLocalRatio(aspectRatio);
+              }
+
+              // If width is larger than 720, then set the video profile to 720p_1
+              if (width > 720) {
+                localStream.current.setVideoProfile("720p_1");
+              }
+            } catch (e) {
+              clearInterval(localInterval.current);
+            }
+          }, 1000);
+
+          client.current.publish(localStream.current, (err) =>
+            console.error("publish failed", err)
+          );
+        },
+        (err) => console.error("stream init fail", err)
+      );
+    });
+  };
+
   // subscribe to stream events to hear the remote stream
   const subscribeStreamEvents = () => {
     // Remote stream added
@@ -94,18 +146,27 @@ const AgoraVideo = ({
 
     // Remote stream subscribed
     client.current.on("stream-subscribed", function (evt) {
+      if (!received.current) {
+        received.current = true;
+
+        clearInterval(localInterval.current);
+        clearInterval(remoteInterval.current);
+        client.current.leave();
+        localStream.current.stop();
+        localStream.current.close();
+
+        joinChannel();
+        return;
+      }
+
       remoteStream.current = evt.stream;
       remoteStream.current.play(
         "agora_remote",
         {
           fit: !expanded ? "contain" : "cover",
         },
-        async () => {
-          setRemoteJoined(true);
-        }
+        async () => {}
       );
-
-      console.log(remoteStream.current.getAudioTrack());
 
       remoteInterval.current = setInterval(() => {
         try {
@@ -132,66 +193,10 @@ const AgoraVideo = ({
 
     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
     client.current.init(AGORA_APP_ID, () => {}, []);
+    received.current = false;
     subscribeStreamEvents();
-
-    const timeout = (time) =>
-      new Promise((resolve) => setTimeout(resolve, time));
-
     // Join to the channel
-    client.current.join(token, channel, userID, async (uid) => {
-      await timeout(1000);
-      clearInterval(localInterval.current);
-      clearInterval(remoteInterval.current);
-      client.current.leave();
-
-      client.current.join(token, channel, userID, (uid) => {
-        localStream.current = AgoraRTC.createStream({
-          streamID: uid,
-          audio: true,
-          video: true,
-          screen: false,
-        });
-
-        // Init local stream
-        localStream.current.init(
-          () => {
-            console.log("stream init success");
-            localStream.current.play("agora_local");
-
-            // Get aspect ratio
-            localInterval.current = setInterval(() => {
-              try {
-                let {
-                  aspectRatio,
-                  height,
-                  width,
-                } = localStream.current.getVideoTrack().getSettings();
-
-                if (!aspectRatio && height && width) {
-                  aspectRatio = width / height;
-                }
-
-                if (aspectRatio !== localRatio) {
-                  setLocalRatio(aspectRatio);
-                }
-
-                // If width is larger than 720, then set the video profile to 720p_1
-                if (width > 720) {
-                  localStream.current.setVideoProfile("720p_1");
-                }
-              } catch (e) {
-                clearInterval(localInterval.current);
-              }
-            }, 1000);
-
-            client.current.publish(localStream.current, (err) =>
-              console.error("publish failed", err)
-            );
-          },
-          (err) => console.error("stream init fail", err)
-        );
-      });
-    });
+    joinChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

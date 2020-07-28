@@ -8,24 +8,16 @@ import BrowserCheck from "../../components/BrowserCheck";
 import "./index.css";
 
 const VideoCallPage = (props) => {
-  const [remoteJoined, setRemoteJoined] = useState(false);
-
   const leaveCall = () => props.history.push("/");
 
   return (
     <BrowserCheck>
       <div style={{ width: "100vw", height: "100vh" }}>
-        <AgoraVideo
-          remoteJoined={remoteJoined}
-          setRemoteJoined={setRemoteJoined}
-          leaveCall={leaveCall}
-        />
+        <AgoraVideo leaveCall={leaveCall} />
         <DrawerControls />
-        {!remoteJoined && (
-          <div className="loader">
-            <Spin /> Waiting For Participant ...
-          </div>
-        )}
+        <div className="loader">
+          <Spin /> Waiting For Participant ...
+        </div>
       </div>
     </BrowserCheck>
   );
