@@ -20,8 +20,8 @@
     left: 30px;
     top: 0;
     display: flex;
-    justify-content: space-around;
     flex-direction: column;
+    justify-content: flex-end;
     height: 100%;
     width: 50px;
   }

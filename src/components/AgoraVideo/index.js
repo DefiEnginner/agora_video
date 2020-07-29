@@ -8,13 +8,14 @@ import CallControls from "./CallControls";
 import { v4 as uuidv4 } from "uuid";
 
 import "./style.css";
+import { notification } from "antd";
 
 const { AGORA_APP_ID } = config;
 
 const AgoraVideo = ({
   channel = "hello_agora_video" /* receive channel as a prop */,
   userID = uuidv4() /* user ID as a prop */,
-  token = "006d874b444c4d84e3fab1db6af0ef8a40aIADExRkeu8HwcYtYTshv7X874aFgW7aUxxLESH4lruDkRoLfv3wAAAAAEABedM71nXAhXwEAAQCccCFf" /* token as a prop */,
+  token = "006d874b444c4d84e3fab1db6af0ef8a40aIAB0UHMHln2HdxiAWwmud1YHy6MKGTV4IyuTKdHMclLYBoLfv3wAAAAAEABedM71riEiXwEAAQCtISJf" /* token as a prop */,
   leaveCall: leavePage,
 }) => {
   const client = useRef(null);
@@ -122,7 +123,21 @@ const AgoraVideo = ({
             console.error("publish failed", err)
           );
         },
-        (err) => console.error("stream init fail", err)
+        (err) => {
+          console.error("stream init fail", err);
+          if (err.info === "Permission denied") {
+            notification.error({
+              message: "Permission not granted",
+              description: (
+                <div>
+                  You need to give this app permission to use your device’s
+                  camera and microphone.
+                  <a href="#">Click here</a>
+                </div>
+              ),
+            });
+          }
+        }
       );
     });
   };
@@ -139,9 +154,11 @@ const AgoraVideo = ({
     });
 
     // Peer leaved the call
-    client.current.on("peer-leave", function (evt) {
+    client.current.on("peer-leave", function () {
       remoteStream.current.stop();
       clearInterval(remoteInterval.current);
+      document.querySelector(".loader").innerHTML =
+        "The other participant left the call.";
     });
 
     // Remote stream subscribed

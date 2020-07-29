@@ -40,8 +40,8 @@
     display: none !important;
   }
   .drawer-controls {
-    bottom: calc(50% + 160px);
-    height: calc(50% - 160px);
+    bottom: 190px;
+    height: calc(100% - 190px);
     justify-content: flex-end;
   }
 }

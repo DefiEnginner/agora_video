@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { withRouter } from "react-router-dom";
 import { Spin } from "antd";
 
@@ -16,7 +16,7 @@ const VideoCallPage = (props) => {
         <AgoraVideo leaveCall={leaveCall} />
         <DrawerControls />
         <div className="loader">
-          <Spin /> Waiting For Participant ...
+          <Spin /> Awaiting other participant
         </div>
       </div>
     </BrowserCheck>

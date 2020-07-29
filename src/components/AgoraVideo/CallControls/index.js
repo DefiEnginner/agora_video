@@ -6,9 +6,7 @@ import {
   WhatsAppOutlined,
   AudioMutedOutlined,
   VideoCameraAddOutlined,
-  ReloadOutlined,
 } from "@ant-design/icons";
-import { isMobile } from "react-device-detect";
 
 import "./index.css";
 
@@ -37,14 +35,6 @@ const CallControls = ({ stream, leaveCall, switchCamera }) => {
   return (
     <div className="call-controls">
       <div className="controls">
-        {isMobile && (
-          <Button
-            shape="circle"
-            icon={<ReloadOutlined />}
-            className="control"
-            onClick={switchCamera}
-          />
-        )}
         <Button
           shape="circle"
           icon={audioMuted ? <AudioMutedOutlined /> : <AudioOutlined />}
